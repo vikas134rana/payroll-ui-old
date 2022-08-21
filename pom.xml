@@ -15,7 +15,7 @@
 	<description>Payroll UI</description>
 	<properties>
 		<java.version>1.8</java.version>
-		<vaadin.version>23.1.4</vaadin.version>
+		<vaadin.version>22.0.20</vaadin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -62,20 +62,36 @@
 	</dependencyManagement>
 
 	<build>
+		<defaultGoal>spring-boot:run</defaultGoal>
 		<plugins>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!-- Clean build and startup time for Vaadin apps sometimes may exceed
+					the default Spring Boot's 30sec timeout. -->
 				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+					<wait>500</wait>
+					<maxAttempts>240</maxAttempts>
 				</configuration>
 			</plugin>
+
+			<!-- Take care of synchronizing java dependencies and imports in package.json
+				and main.js files. It also creates webpack.config.js if not exists yet. -->
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-frontend</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+
 	</build>
 
 	<profiles>
